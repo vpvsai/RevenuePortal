@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Download } from 'lucide-react';
+import { useNavigate } from "react-router-dom";
 // Modal Component
 function Modal({ isOpen, onClose, title, children }) {
   if (!isOpen) return null;
@@ -162,7 +163,7 @@ const [utilityBudget, setUtilityBudget] = useState('');
       mobileNumber: ''
     });
   };
-
+  const navigate = useNavigate();
   const handleAttachmentSubmit = (e) => {
     e.preventDefault();
     console.log('Attachment form submitted:', attachmentForm);
@@ -214,9 +215,12 @@ const [utilityBudget, setUtilityBudget] = useState('');
               >
                 📁 Projects
               </button>
-              <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
-                📢 Announcements
-              </button>
+              <button
+      className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center"
+      onClick={() => navigate("/revenue/announcements")}
+    >
+      📢 Announcements
+    </button>
               <button 
                 onClick={() => {
                   setCurrentView('requestStatus');
@@ -240,7 +244,7 @@ const [utilityBudget, setUtilityBudget] = useState('');
               >
                 🔑 Change Password
               </button>
-              <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
+              <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center" onClick={() => navigate("/")}>
                 ↪ Logout
               </button>
             </div>

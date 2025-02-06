@@ -5,7 +5,8 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Login';
 import Revenue1 from './components/revenue1';
 import AddProject from './components/addproject';
-// import Requeststatus from './components/requeststatus';
+import Requeststatus from './components/requeststatus';
+import Announcements from './components/Announcements';
 
 
 
@@ -14,10 +15,11 @@ const App = () => {
     <Router>
       <div className="App">
         <Routes>
-          <Route path="/login" element={<Login />} />
-          <Route path="/revenue1" element={<Revenue1 />} />
-<Route path="/revenue1/addProject" element={<AddProject />} />
-
+          <Route path="/" element={<Login />} />
+          <Route path="/revenue" element={<Revenue1 />} />
+<Route path="/revenue/addProject" element={<AddProject />} />
+<Route path="/revenue/requeststatus" element={<Requeststatus />} />
+<Route path="/revenue/announcements" element={<Announcements />} />
 
 
         </Routes>

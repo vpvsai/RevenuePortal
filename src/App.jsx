@@ -5,7 +5,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Login from './components/Login';
 import Revenue1 from './components/revenue1';
 import AddProject from './components/addproject';
-import Requeststatus from './components/requeststatus';
+// import Requeststatus from './components/requeststatus';
 
 
 
@@ -17,7 +17,7 @@ const App = () => {
           <Route path="/login" element={<Login />} />
           <Route path="/revenue1" element={<Revenue1 />} />
 <Route path="/revenue1/addProject" element={<AddProject />} />
-<Route path="/requeststatus" element={<Requeststatus />} />
+
 
 
         </Routes>

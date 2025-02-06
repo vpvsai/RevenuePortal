@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-
+import { Download } from 'lucide-react';
 // Modal Component
 function Modal({ isOpen, onClose, title, children }) {
   if (!isOpen) return null;
@@ -18,9 +18,58 @@ function Modal({ isOpen, onClose, title, children }) {
     </div>
   );
 }
+function StatusSection({ title, message }) {
+  return (
+    <div className="mt-6">
+      <h3 className="text-[#8B1F41] font-medium text-lg mb-4">{title}</h3>
+      <div className="bg-white rounded-lg shadow p-8 flex flex-col items-center justify-center">
+        <Download size={48} className="text-gray-400 mb-4" />
+        <p className="text-gray-600 text-center">{message}</p>
+      </div>
+    </div>
+  );
+}
+function RequestStatusView() {
+  return (
+    <div className="p-6">
+      <div className="bg-pink-50 py-4 px-8 -mx-6 mb-8">
+        <h1 className="text-center text-xl font-medium">Department Admin</h1>
+      </div>
+      
+      <h2 className="text-[#8B1F41] text-xl font-medium mb-6">Report Request Status</h2>
+      
+      <StatusSection 
+        title="Generated Reports" 
+        message="No generated files currently available" 
+      />
+      
+      <StatusSection 
+        title="Ongoing Reports" 
+        message="Currently there is no ongoing request" 
+      />
+      
+      <StatusSection 
+        title="Failed Reports" 
+        message="No failed request" 
+      />
+
+      {/* Additional sections for scrolling */}
+      {[1, 2, 3].map((_, index) => (
+        <StatusSection 
+          key={index}
+          title={`Additional Reports ${index + 1}`}
+          message="Sample report section to enable scrolling"
+        />
+      ))}
+    </div>
+  );
+}
 
 function revenue1() {
   // Modal states
+  const [showPassword, setShowPassword] = useState(false);
+   const [currentView, setCurrentView] = useState('projects');
+    const [showProjects, setShowProjects] = useState(false);
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
   const [isTeammateModalOpen, setIsTeammateModalOpen] = useState(false);
   const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
@@ -35,6 +84,11 @@ const [utilityBudget, setUtilityBudget] = useState('');
     startDate: '',
     duration: '',
   });
+  const [passwordForm, setPasswordForm] = useState({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setProjectData((prevData) => ({
@@ -67,7 +121,19 @@ const [utilityBudget, setUtilityBudget] = useState('');
     recurring: false,
     attachment: null
   });
-
+  const handlePasswordSubmit = (e) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      alert('New passwords do not match!');
+      return;
+    }
+    console.log('Password change submitted:', passwordForm);
+    setPasswordForm({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+  };
   // Form handlers
   const handleDocumentSubmit = (e) => {
     e.preventDefault();
@@ -132,301 +198,364 @@ const [utilityBudget, setUtilityBudget] = useState('');
           <div className="p-4 bg-[#8B1F41] text-white font-medium">
             Project Monitoring Portal
           </div>
-          <div className="p-4 bg-pink-100">
-            Principal Investigator
-          </div>
+          <div className="p-4 bg-pink-100">Principal Investigator</div>
           <nav className="p-2">
-            <ul className="space-y-2">
-              <li className="p-2 hover:bg-gray-100 rounded">🏠 Home</li>
-              <li className="p-2 bg-[#8B1F41] text-white rounded">📁 Projects</li>
-              <li className="p-2 hover:bg-gray-100 rounded">📢 Announcements</li>
-              <li className="p-2 hover:bg-gray-100 rounded">📋 Request Status</li>
-              <li className="p-2 hover:bg-gray-100 rounded">📊 Projects Table</li>
-              <li className="p-2 hover:bg-gray-100 rounded">🔑 Change Password</li>
-              <li className="p-2 hover:bg-gray-100 rounded">↪️ Logout</li>
-            </ul>
+            <div className="space-y-2">
+              <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
+                🏠 Home
+              </button>
+              <button 
+                onClick={() => {
+                  setCurrentView('projects');
+                  setShowProjects(true);
+                  setShowPassword(false);
+                }}
+                className={`w-full text-left p-2 rounded flex items-center ${currentView === 'projects' ? 'bg-[#8B1F41] text-white' : 'hover:bg-gray-100'}`}
+              >
+                📁 Projects
+              </button>
+              <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
+                📢 Announcements
+              </button>
+              <button 
+                onClick={() => {
+                  setCurrentView('requestStatus');
+                  setShowProjects(false);
+                  setShowPassword(false);
+                }}
+                className={`w-full text-left p-2 rounded flex items-center ${currentView === 'requestStatus' ? 'bg-[#8B1F41] text-white' : 'hover:bg-gray-100'}`}
+              >
+                📋 Request Status
+              </button>
+              <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
+                📊 Projects Table
+              </button>
+              <button 
+                onClick={() => {
+                  setCurrentView('password');
+                  setShowPassword(true);
+                  setShowProjects(false);
+                }}
+                className={`w-full text-left p-2 rounded flex items-center ${currentView === 'password' ? 'bg-[#8B1F41] text-white' : 'hover:bg-gray-100'}`}
+              >
+                🔑 Change Password
+              </button>
+              <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
+                ↪ Logout
+              </button>
+            </div>
           </nav>
         </aside>
 
         {/* Main Content Area */}
-        <main className="flex-1 p-6">
-        <section>
-      <div className="mb-6">
-        {/* Section Heading */}
-        <h2 className="text-[#8B1F41] text-2xl font-medium mb-4">CSE</h2>
-        
-        {/* Specific #ID and Heading */}
-        <div className="flex items-center gap-4 mb-4">
-          <span className="text-xl font-semibold">#ID</span>
-          <span className="text-lg text-gray-600">Revenue Management Project</span>
-        </div>
-
-        {/* Table Section with Inputs */}
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <table className="w-full">
-            <thead>
-              <tr className="text-left bg-gray-50">
-                <th className="py-2 px-4">Project</th>
-                <th>Department</th>
-                <th>Amount</th>
-                <th>Start Date</th>
-                <th>Duration</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              <tr className="bg-gray-100">
-                <td className="py-2 px-4">
+       {/* Main Content */}
+       <main className="flex-1">
+          {currentView === 'requestStatus' ? (
+            <RequestStatusView />
+          ) : currentView === 'password' ? (
+            <div className="max-w-md mx-auto p-6">
+              <h2 className="text-2xl font-semibold text-[#8B1F41] mb-6">Change Password</h2>
+              <form onSubmit={handlePasswordSubmit} className="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Current Password</label>
                   <input
-                    type="text"
-                    name="project"
-                    value={projectData.project}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder="Enter Project"
+                    type="password"
+                    value={passwordForm.currentPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8B1F41] focus:ring-[#8B1F41]"
+                    required
                   />
-                </td>
-                <td>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">New Password</label>
                   <input
-                    type="text"
-                    name="department"
-                    value={projectData.department}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    disabled
+                    type="password"
+                    value={passwordForm.newPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8B1F41] focus:ring-[#8B1F41]"
+                    required
                   />
-                </td>
-                <td>
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Confirm New Password</label>
                   <input
-                    type="number"
-                    name="amount"
-                    value={projectData.amount}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder="Enter Amount"
+                    type="password"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8B1F41] focus:ring-[#8B1F41]"
+                    required
                   />
-                </td>
-                <td>
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={projectData.startDate}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    name="duration"
-                    value={projectData.duration}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder="Enter Duration"
-                  />
-                </td>
-                <td className="flex gap-2">
-                  {/* Icons for Save/Cancel */}
-                  <button className="p-2 text-gray-600 hover:text-[#8B1F41]">
-                    <span role="img" aria-label="save">💾</span>
-                  </button>
-                  <button className="p-2 text-gray-600 hover:text-[#8B1F41]">
-                    <span role="img" aria-label="cancel">❌</span>
-                  </button>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-
-        <section className="mt-8">
-      <div className="mb-6">
-        {/* Section Heading */}
-        <h2 className="text-[#8B1F41] text-2xl font-medium mb-4">Budget Information</h2>
-
-        {/* Budget Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          {/* Utility Budget */}
-          <div className="flex items-center gap-2 bg-white p-4 rounded-lg shadow-sm">
-            <span className="text-3xl text-[#8B1F41]">₹</span>
-            <div>
-              <span className="font-semibold text-lg">Utility Budget:</span>
-              <input
-                type="number"
-                value={utilityBudget}
-                onChange={(e) => setUtilityBudget(e.target.value)}
-                placeholder="Enter Utility Budget"
-                className="text-xl p-2 border border-gray-300 rounded-md mt-1"
-              />
-            </div>
-          </div>
-
-          {/* Received Budget */}
-          <div className="flex items-center gap-2 bg-white p-4 rounded-lg shadow-sm">
-            <span className="text-3xl text-[#8B1F41]">₹</span>
-            <div>
-              <span className="font-semibold text-lg">Received Budget:</span>
-              <input
-                type="number"
-                value={receivedBudget}
-                onChange={(e) => setReceivedBudget(e.target.value)}
-                placeholder="Enter Received Budget"
-                className="text-xl p-2 border border-gray-300 rounded-md mt-1"
-              />
-            </div>
-          </div>
-        </div>
-
-        {/* Budget Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
-          {/* Balanced to Get */}
-          <div className="flex items-center gap-2 bg-white p-4 rounded-lg shadow-sm">
-            <span className="text-3xl text-[#8B1F41]">₹</span>
-            <div>
-              <span className="font-semibold text-lg">Balanced to Get:</span>
-              <input
-                type="number"
-                value={balancedToGet}
-                onChange={(e) => setBalancedToGet(e.target.value)}
-                placeholder="Enter Balanced to Get"
-                className="text-xl p-2 border border-gray-300 rounded-md mt-1"
-              />
-            </div>
-          </div>
-
-          {/* Available Budget (highlighted/bold) */}
-          <div className="flex items-center gap-2 bg-white p-4 rounded-lg shadow-sm">
-            <span className="text-3xl text-[#8B1F41]">₹</span>
-            <div>
-              <span className="font-semibold text-lg">Available Budget:</span>
-              <input
-                type="number"
-                value={availableBudget}
-                onChange={(e) => setAvailableBudget(e.target.value)}
-                placeholder="Enter Available Budget"
-                className="text-xl p-2 border border-gray-300 rounded-md mt-1 font-bold text-[#8B1F41]"
-              />
-            </div>
-          </div>
-        </div>
-      </div>
-    </section>
-          <div className="space-y-6">
-            {/* Project Documents Section */}
-            <section>
-              <div className="flex justify-between items-center mb-4">
-                <h2 className="text-[#8B1F41] text-xl font-medium">Project Documents</h2>
-                <button 
-                  onClick={() => setIsDocumentModalOpen(true)}
-                  className="px-4 py-2 bg-[#8B1F41] text-white rounded-md hover:bg-[#7a1b39] flex items-center gap-2"
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-[#8B1F41] text-white py-2 px-4 rounded-md hover:bg-[#7a1b39] transition-colors"
                 >
-                  <span>+</span> Add Document
+                  Change Password
                 </button>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left">
-                      <th className="py-2">Year</th>
-                      <th>Release Order</th>
-                      <th>Sanction Letter</th>
-                      <th>Utilization Certificates</th>
-                      <th>Fund</th>
-                      <th>Remarks</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {/* Empty state */}
-                  </tbody>
-                </table>
-              </div>
-            </section>
-
-            {/* Team Section */}
-           <section>
-  <div className="flex justify-between items-center mb-4">
-    <h2 className="text-[#8B1F41] text-xl font-medium">Team</h2>
-    <div className="flex gap-2">
-      <button
-        onClick={() => setIsTeammateModalOpen(true)}
-        className="px-4 py-2 bg-[#8B1F41] text-white rounded-md hover:bg-[#7a1b39] flex items-center gap-2"
-      >
-        <span>+</span> Add Teammate
-      </button>
-      {/* <button className="p-2">👥</button> */}
-    </div>
-  </div>
-  <div className="bg-white p-4 rounded-lg shadow-sm">
-    <table className="w-full">
-      <thead>
-        <tr className="text-left bg-gray-50">
-          <th className="py-2 px-4">Name</th>
-          <th>Email</th>
-          <th>Role</th>
-          <th>Department</th>
-          <th>Stipend</th>
-          <th>Mobile Number</th>
-          <th>Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {/* No data here, table is empty */}
-        {/* The rows will be dynamically added when the user adds a teammate */}
-      </tbody>
-    </table>
-  </div>
-</section>
-
-
-            {/* Activities Section */}
-            <section>
-              <div className="flex justify-between items-center mb-4">
-                <div className="flex items-center gap-4">
-                  <h2 className="text-[#8B1F41] text-xl font-medium">Activities</h2>
-                  <div className="flex gap-2">
-                    <button className="flex items-center gap-1">
-                      <span>↻</span> Progress
-                    </button>
-                    <button>⋮</button>
+              </form>
+            </div>
+          ) : showProjects && (
+            <div className="space-y-6">
+              {/* Project Section */}
+              <section>
+                <div className="mb-6">
+                  <h2 className="text-[#8B1F41] text-2xl font-medium mb-4">CSE</h2>
+                  <div className="flex items-center gap-4 mb-4">
+                    <span className="text-xl font-semibold">#ID</span>
+                    <span className="text-lg text-gray-600">Revenue Management Project</span>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="text-left bg-gray-50">
+                          <th className="py-2 px-4">Project</th>
+                          <th>Department</th>
+                          <th>Amount</th>
+                          <th>Start Date</th>
+                          <th>Duration</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="bg-gray-100">
+                          <td className="py-2 px-4">
+                            <input
+                              type="text"
+                              name="project"
+                              value={projectData.project}
+                              onChange={handleInputChange}
+                              className="w-full p-2 border border-gray-300 rounded-md"
+                              placeholder="Enter Project"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              name="department"
+                              value={projectData.department}
+                              onChange={handleInputChange}
+                              className="w-full p-2 border border-gray-300 rounded-md"
+                              disabled
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              name="amount"
+                              value={projectData.amount}
+                              onChange={handleInputChange}
+                              className="w-full p-2 border border-gray-300 rounded-md"
+                              placeholder="Enter Amount"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="date"
+                              name="startDate"
+                              value={projectData.startDate}
+                              onChange={handleInputChange}
+                              className="w-full p-2 border border-gray-300 rounded-md"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              name="duration"
+                              value={projectData.duration}
+                              onChange={handleInputChange}
+                              className="w-full p-2 border border-gray-300 rounded-md"
+                              placeholder="Enter Duration"
+                            />
+                          </td>
+                          <td className="flex gap-2">
+                            <button className="p-2 text-gray-600 hover:text-[#8B1F41]">
+                              <span role="img" aria-label="save">💾</span>
+                            </button>
+                            <button className="p-2 text-gray-600 hover:text-[#8B1F41]">
+                              <span role="img" aria-label="cancel">❌</span>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
                   </div>
                 </div>
-                <button 
-                  onClick={() => setIsAttachmentModalOpen(true)}
-                  className="px-4 py-2 bg-[#8B1F41] text-white rounded-md hover:bg-[#7a1b39] flex items-center gap-2"
-                >
-                  <span>+</span> Add Attachment
-                </button>
-              </div>
-              <div className="bg-white p-4 rounded-lg shadow-sm">
-                <table className="w-full">
-                  <thead>
-                    <tr className="text-left">
-                      <th className="py-2">Type</th>
-                      <th>Report</th>
-                      <th>Revenue Information</th>
-                      <th>Recurring</th>
-                      <th>Date</th>
-                      <th>Attachment</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    <tr>
-                      <td className="py-2">Project Created</td>
-                      <td></td>
-                      <td></td>
-                      <td></td>
-                      <td>2/3/2024 17:4</td>
-                      <td>
-                        <span className="text-red-500">No Attachment</span>
-                      </td>
-                    </tr>
-                  </tbody>
-                </table>
-              </div>
-            </section>
-          </div>
+              </section>
+
+              {/* Budget Section */}
+              <section>
+                <div className="mb-6">
+                  <h2 className="text-[#8B1F41] text-2xl font-medium mb-4">Budget Information</h2>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div className="flex items-center gap-2 bg-white p-4 rounded-lg shadow-sm">
+                      <span className="text-3xl text-[#8B1F41]">₹</span>
+                      <div>
+                        <span className="font-semibold text-lg">Utility Budget:</span>
+                        <input
+                          type="number"
+                          value={utilityBudget}
+                          onChange={(e) => setUtilityBudget(e.target.value)}
+                          placeholder="Enter Utility Budget"
+                          className="text-xl p-2 border border-gray-300 rounded-md mt-1"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white p-4 rounded-lg shadow-sm">
+                      <span className="text-3xl text-[#8B1F41]">₹</span>
+                      <div>
+                        <span className="font-semibold text-lg">Received Budget:</span>
+                        <input
+                          type="number"
+                          value={receivedBudget}
+                          onChange={(e) => setReceivedBudget(e.target.value)}
+                          placeholder="Enter Received Budget"
+                          className="text-xl p-2 border border-gray-300 rounded-md mt-1"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-6">
+                    <div className="flex items-center gap-2 bg-white p-4 rounded-lg shadow-sm">
+                      <span className="text-3xl text-[#8B1F41]">₹</span>
+                      <div>
+                        <span className="font-semibold text-lg">Balanced to Get:</span>
+                        <input
+                          type="number"
+                          value={balancedToGet}
+                          onChange={(e) => setBalancedToGet(e.target.value)}
+                          placeholder="Enter Balanced to Get"
+                          className="text-xl p-2 border border-gray-300 rounded-md mt-1"
+                        />
+                      </div>
+                    </div>
+                    <div className="flex items-center gap-2 bg-white p-4 rounded-lg shadow-sm">
+                      <span className="text-3xl text-[#8B1F41]">₹</span>
+                      <div>
+                        <span className="font-semibold text-lg">Available Budget:</span>
+                        <input
+                          type="number"
+                          value={availableBudget}
+                          onChange={(e) => setAvailableBudget(e.target.value)}
+                          placeholder="Enter Available Budget"
+                          className="text-xl p-2 border border-gray-300 rounded-md mt-1 font-bold text-[#8B1F41]"
+                        />
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Project Documents Section */}
+              <section>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-[#8B1F41] text-xl font-medium">Project Documents</h2>
+                  <button 
+                    onClick={() => setIsDocumentModalOpen(true)}
+                    className="px-4 py-2 bg-[#8B1F41] text-white rounded-md hover:bg-[#7a1b39] flex items-center gap-2"
+                  >
+                    <span>+</span> Add Document
+                  </button>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-sm">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="text-left">
+                        <th className="py-2">Year</th>
+                        <th>Release Order</th>
+                        <th>Sanction Letter</th>
+                        <th>Utilization Certificates</th>
+                        <th>Fund</th>
+                        <th>Remarks</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Empty state */}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              {/* Team Section */}
+              <section>
+                <div className="flex justify-between items-center mb-4">
+                  <h2 className="text-[#8B1F41] text-xl font-medium">Team</h2>
+                  <div className="flex gap-2">
+                    <button
+                      onClick={() => setIsTeammateModalOpen(true)}
+                      className="px-4 py-2 bg-[#8B1F41] text-white rounded-md hover:bg-[#7a1b39] flex items-center gap-2"
+                    >
+                      <span>+</span> Add Teammate
+                    </button>
+                  </div>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-sm">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="text-left bg-gray-50">
+                        <th className="py-2 px-4">Name</th>
+                        <th>Email</th>
+                        <th>Role</th>
+                        <th>Department</th>
+                        <th>Stipend</th>
+                        <th>Mobile Number</th>
+                        <th>Delete</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      {/* Empty state */}
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+
+              {/* Activities Section */}
+              <section>
+                <div className="flex justify-between items-center mb-4">
+                  <div className="flex items-center gap-4">
+                    <h2 className="text-[#8B1F41] text-xl font-medium">Activities</h2>
+                    <div className="flex gap-2">
+                      <button className="flex items-center gap-1">
+                        <span>↻</span> Progress
+                      </button>
+                      <button>⋮</button>
+                    </div>
+                  </div>
+                  <button 
+                    onClick={() => setIsAttachmentModalOpen(true)}
+                    className="px-4 py-2 bg-[#8B1F41] text-white rounded-md hover:bg-[#7a1b39] flex items-center gap-2"
+                  >
+                    <span>+</span> Add Attachment
+                  </button>
+                </div>
+                <div className="bg-white p-4 rounded-lg shadow-sm">
+                  <table className="w-full">
+                    <thead>
+                      <tr className="text-left">
+                        <th className="py-2">Type</th>
+                        <th>Report</th>
+                        <th>Revenue Information</th>
+                        <th>Recurring</th>
+                        <th>Date</th>
+                        <th>Attachment</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td className="py-2">Project Created</td>
+                        <td></td>
+                        <td></td>
+                        <td></td>
+                        <td>2/3/2024 17:4</td>
+                        <td>
+                          <span className="text-red-500">No Attachment</span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+              </section>
+            </div>
+          )}
         </main>
       </div>
 
@@ -639,7 +768,7 @@ const [utilityBudget, setUtilityBudget] = useState('');
               Recurring
             </label>
           </div>
-          <div>
+          <div >
             <label className="block text-sm font-medium text-gray-700">Attachment</label>
             <input
               type="file"
@@ -669,3 +798,4 @@ const [utilityBudget, setUtilityBudget] = useState('');
 }
 
 export default revenue1;
+

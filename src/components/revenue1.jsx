@@ -21,6 +21,7 @@ function Modal({ isOpen, onClose, title, children }) {
 
 function revenue1() {
   // Modal states
+  const [showProjects, setShowProjects] = useState(false);
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
   const [isTeammateModalOpen, setIsTeammateModalOpen] = useState(false);
   const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
@@ -28,6 +29,12 @@ const [utilityBudget, setUtilityBudget] = useState('');
   const [receivedBudget, setReceivedBudget] = useState('');
   const [balancedToGet, setBalancedToGet] = useState('');
   const [availableBudget, setAvailableBudget] = useState('');
+  const [showPassword, setShowPassword] = useState(false);
+  const [passwordForm, setPasswordForm] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
   const [projectData, setProjectData] = useState({
     project: '',
     department: 'CSE', // Default value
@@ -109,6 +116,19 @@ const [utilityBudget, setUtilityBudget] = useState('');
       attachment: null
     });
   };
+  const handlePasswordSubmit = (e) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      alert('New passwords do not match!');
+      return;
+    }
+    console.log('Password change submitted:', passwordForm);
+    setPasswordForm({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+  };
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -129,28 +149,103 @@ const [utilityBudget, setUtilityBudget] = useState('');
       <div className="flex">
         {/* Sidebar */}
         <aside className="w-64 bg-white h-screen shadow-sm">
-          <div className="p-4 bg-[#8B1F41] text-white font-medium">
-            Project Monitoring Portal
-          </div>
-          <div className="p-4 bg-pink-100">
-            Principal Investigator
-          </div>
-          <nav className="p-2">
-            <ul className="space-y-2">
-              <li className="p-2 hover:bg-gray-100 rounded">🏠 Home</li>
-              <li className="p-2 bg-[#8B1F41] text-white rounded">📁 Projects</li>
-              <li className="p-2 hover:bg-gray-100 rounded">📢 Announcements</li>
-              <li className="p-2 hover:bg-gray-100 rounded">📋 Request Status</li>
-              <li className="p-2 hover:bg-gray-100 rounded">📊 Projects Table</li>
-              <li className="p-2 hover:bg-gray-100 rounded">🔑 Change Password</li>
-              <li className="p-2 hover:bg-gray-100 rounded">↪️ Logout</li>
-            </ul>
-          </nav>
-        </aside>
+  <div className="p-4 bg-[#8B1F41] text-white font-medium">
+    Project Monitoring Portal
+  </div>
+  <div className="p-4 bg-pink-100">Principal Investigator</div>
+  <nav className="p-2">
+    <div className="space-y-2">
+      <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
+        🏠 Home
+      </button>
+      <button 
+       onClick={() => setShowProjects(!showProjects)}
+        className="w-full text-left p-2 bg-[#8B1F41] text-white rounded flex items-center">
+        📁 Projects
+      </button>
+      <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
+        📢 Announcements
+      </button>
+      <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
+        📋 Request Status
+      </button>
+      <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
+        📊 Projects Table
+      </button>
+      <button 
+                onClick={() => {
+                  setShowPassword(!showPassword);
+                  setShowProjects(false);
+                }}
+                className={`w-full text-left p-2 rounded flex items-center ${showPassword ? 'bg-[#8B1F41] text-white' : 'hover:bg-gray-100'}`}
+              >
+                🔑 Change Password
+              </button>
+      <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
+        ↪️ Logout
+      </button>
+    </div>
+  </nav>
+</aside>
 
-        {/* Main Content Area */}
-        <main className="flex-1 p-6">
-        <section>
+{/* checkkkk */}
+<main className="flex-1 p-6">
+          {!showProjects && !showPassword && (
+            <div className="text-xl font-semibold">Welcome! Select an option from the menu.</div>
+          )}
+
+          {showPassword && (
+            <div className="max-w-md mx-auto">
+              <h2 className="text-2xl font-semibold text-[#8B1F41] mb-6">Change Password</h2>
+              <form onSubmit={handlePasswordSubmit} className="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Current Password
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordForm.currentPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#8B1F41] focus:border-[#8B1F41]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordForm.newPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#8B1F41] focus:border-[#8B1F41]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Re-enter New Password
+                  </label>
+                  <input
+                    type="password"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                    className="w-full p-2 border border-gray-300 rounded-md focus:ring-[#8B1F41] focus:border-[#8B1F41]"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full px-4 py-2 bg-[#8B1F41] text-white rounded-md hover:bg-[#7a1b39] transition-colors"
+                >
+                  Change Password
+                </button>
+              </form>
+            </div>
+          )}
+           {showProjects && (
+            <>
+            <section>
       <div className="mb-6">
         {/* Section Heading */}
         <h2 className="text-[#8B1F41] text-2xl font-medium mb-4">CSE</h2>
@@ -425,11 +520,18 @@ const [utilityBudget, setUtilityBudget] = useState('');
                   </tbody>
                 </table>
               </div>
+              
             </section>
-          </div>
-        </main>
-      </div>
+            </div>
+            </>
+            )}
+            </main>
+            
+            
 
+       
+        
+          
       {/* Modals */}
       <Modal
         isOpen={isDocumentModalOpen}
@@ -664,7 +766,8 @@ const [utilityBudget, setUtilityBudget] = useState('');
           </div>
         </form>
       </Modal>
-    </div>
+    
+    </div></div>
   );
 }
 

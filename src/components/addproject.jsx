@@ -3,7 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import backgroundImage from '../components/images/sathyabama_pic1.jpg'; // Adjust the path as needed
 
 
-function App() {
+function addproject() {
   const navigate = useNavigate();
 
   return (
@@ -157,4 +157,4 @@ function App() {
   );
 }
 
-export default App;
+export default addproject;

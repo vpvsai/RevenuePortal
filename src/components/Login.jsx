@@ -1,21 +1,34 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import useNavigate from react-router-dom
-import backgroundImage from '../components/images/sathyabama_pic1.jpg'; // Adjust the path as needed
+import { useNavigate } from 'react-router-dom'; 
+import backgroundImage from '../components/images/sathyabama_pic1.jpg'; 
 
 const Login = () => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
-  const navigate = useNavigate(); // Initialize useNavigate
-
-  const handleLogin = (e) => {
+  const [error, setError] = useState('');
+  const navigate = useNavigate();
+  const handleLogin = async (e) => {
     e.preventDefault();
-    console.log('Email:', email);
-    console.log('Password:', password);
-    
-    // After successful login, navigate to /revenue1
-    navigate('/revenue1');
+    try {
+      const response = await fetch('http://127.0.0.1:5000/login', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ email, password })
+      });
+  
+      const data = await response.json();
+      if (data.status === "success") {
+        localStorage.setItem("user", JSON.stringify(data.user)); // Store user details
+        navigate('/revenue');
+      } else {
+        alert(data.message);
+      }
+    } catch (error) {
+      console.error("Login Error:", error);
+    }
   };
+  
 
   return (
     <div
@@ -26,6 +39,9 @@ const Login = () => {
     >
       <div className="w-full max-w-md p-8 bg-white bg-opacity-90 border border-gray-300 rounded-xl shadow-lg">
         <h1 className="mb-6 text-3xl font-bold text-black">Project Monitoring Portal</h1>
+
+        {error && <p className="text-red-500 text-center">{error}</p>} 
+
         <form onSubmit={handleLogin} className="space-y-6">
           <div className="space-y-2">
             <label className="block text-gray-800 font-semibold">Email ID:</label>

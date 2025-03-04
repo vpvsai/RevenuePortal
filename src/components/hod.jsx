@@ -1,13 +1,9 @@
 import React, { useState } from 'react';
 import { Download } from 'lucide-react';
-import { useNavigate } from "react-router-dom";
-import {  useEffect } from "react";
 import ProjectTable from './projectTable';
-import DepartmentProjectCards from "./ProjectCard";
-import { ToastContainer, toast } from "react-toastify";
-import "react-toastify/dist/ReactToastify.css";
-import  { Toaster } from "react-hot-toast";
-import axios from "axios";
+import Announcements from './HodAnnouncements';
+import AllProjectCards from "./AllProjectCards";
+
 // Modal Component
 function Modal({ isOpen, onClose, title, children }) {
   if (!isOpen) return null;
@@ -26,6 +22,7 @@ function Modal({ isOpen, onClose, title, children }) {
     </div>
   );
 }
+
 function StatusSection({ title, message }) {
   return (
     <div className="mt-6">
@@ -37,6 +34,7 @@ function StatusSection({ title, message }) {
     </div>
   );
 }
+
 function RequestStatusView() {
   return (
     <div className="p-6">
@@ -61,7 +59,6 @@ function RequestStatusView() {
         message="No failed request" 
       />
 
-      {/* Additional sections for scrolling */}
       {[1, 2, 3].map((_, index) => (
         <StatusSection 
           key={index}
@@ -73,129 +70,39 @@ function RequestStatusView() {
   );
 }
 
-function revenue1() {
-  const [user, setUser] = useState(null);
-  const [loading, setLoading] = useState(false);
-  useEffect(() => {
-    const storedUser = JSON.parse(localStorage.getItem("user"));
-    console.log("Stored User:", storedUser); // Debugging
-    if (storedUser) {
-      setUser(storedUser);
-    }
-  }, []);
-  useEffect(() => {
-    if (user) {
-      fetchProjects();
-    }
-  }, [user]);
-   
-
-
-  const [projects, setProjects] = useState([]);
-  const [project, setProject] = useState("");
-const [department, setDepartment] = useState("");
-const [amount, setAmount] = useState("");
-const [startDate, setStartDate] = useState("");
-const [duration, setDuration] = useState("");
-//   const email = localStorage.getItem("email");
-// console.log("Retrieved email:", email); // Debugging
-
-  useEffect(() => {
-    fetchProjects();
-  }, []);
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target;
-    setProjectData((prevData) => ({ ...prevData, [name]: value }));
-  };
-
-  const fetchProjects = async () => {
-    if (!user || !user.email) {
-      console.error("User email is not available!");
-      return;
-    }
-  
-    console.log("Sending email to backend:", user.email);
-  
-    try {
-      const response = await axios.get("http://localhost:5000/get_staff_projects", {
-        params: { email: user.email }
-      });
-  
-      console.log("Fetched Projects from Backend:", response.data.projects);
-    } catch (error) {
-      console.error("Error fetching projects:", error);
-    }
-  };
-  
-  const [showProjectTable, setShowProjectTable] = useState(false);
-
-  const handleSaveProject = async () => {
-    if (!user) {
-      console.error("User data not available yet!");
-      toast.error("User data not found!");
-      return;
-    }
-
-    if (!projectData.project || !projectData.department || !projectData.amount || !projectData.startDate || !projectData.duration) {
-      console.error("Missing fields, please fill all project details!");
-      toast.warning("Please fill in all fields!");
-      return;
-    }
-
-    const finalProjectData = {
-      email: user.email,
-      project: projectData.project,
-      department: projectData.department,
-      amount: projectData.amount,
-      startDate: projectData.startDate,
-      duration: projectData.duration,
-    };
-
-    console.log("Final Data Sent to Backend:", finalProjectData);
-
-    try {
-      setLoading(true); // Start loading
-      const response = await axios.post("http://localhost:5000/add_staff_project", finalProjectData, {
-        headers: { "Content-Type": "application/json" },
-      });
-
-      console.log("Response from Backend:", response.data);
-      toast.success("Project saved successfully!"); // ✅ Success message
-    } catch (error) {
-      console.error("Error sending data:", error);
-      toast.error("Failed to save project!"); // ❌ Error message
-    } finally {
-      setLoading(false); // Stop loading
-    }
-  };
-
-  
+function hod() {
   // Modal states
   const [showPassword, setShowPassword] = useState(false);
-   const [currentView, setCurrentView] = useState('projects');
-    const [showProjects, setShowProjects] = useState(false);
+  const [currentView, setCurrentView] = useState('');
+  const [showProjects, setShowProjects] = useState(false);
+  const [showCreateUser, setShowCreateUser] = useState(false);
   const [isDocumentModalOpen, setIsDocumentModalOpen] = useState(false);
   const [isTeammateModalOpen, setIsTeammateModalOpen] = useState(false);
   const [isAttachmentModalOpen, setIsAttachmentModalOpen] = useState(false);
-const [utilityBudget, setUtilityBudget] = useState('');
+  const [utilityBudget, setUtilityBudget] = useState('');
   const [receivedBudget, setReceivedBudget] = useState('');
   const [balancedToGet, setBalancedToGet] = useState('');
+  const [showProjectTable, setShowProjectTable] = useState(false);
+
   const [availableBudget, setAvailableBudget] = useState('');
+  const [createUserForm, setCreateUserForm] = useState({
+    email: '',
+    password: '',
+    confirmPassword: '',
+    department: ''
+  });
   const [projectData, setProjectData] = useState({
-    
     project: '',
-    department: '', // Default value
+    department: 'CSE',
     amount: '',
     startDate: '',
     duration: '',
   });
   const [passwordForm, setPasswordForm] = useState({
-      currentPassword: '',
-      newPassword: '',
-      confirmPassword: ''
-    });
- 
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
   const [documentForm, setDocumentForm] = useState({
     year: '',
     releaseOrder: '',
@@ -204,7 +111,6 @@ const [utilityBudget, setUtilityBudget] = useState('');
     fund: '',
     remarks: ''
   });
-
   const [teammateForm, setTeammateForm] = useState({
     name: '',
     email: '',
@@ -213,7 +119,6 @@ const [utilityBudget, setUtilityBudget] = useState('');
     stipend: '',
     mobileNumber: ''
   });
-
   const [attachmentForm, setAttachmentForm] = useState({
     type: '',
     report: '',
@@ -221,48 +126,64 @@ const [utilityBudget, setUtilityBudget] = useState('');
     recurring: false,
     attachment: null
   });
- 
-  const handlePasswordSubmit = async (e) => {
-    e.preventDefault();
 
-    if (!user) {
-      toast.error("User not found. Please log in again.");
-      return;
-    }
-
-    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
-      toast.error("New passwords do not match!");
-      return;
-    }
-
-    setLoading(true);
-
-    try {
-      const response = await axios.post("http://localhost:5000/change_password", {
-        email: user.email,
-        currentPassword: passwordForm.currentPassword,
-        newPassword: passwordForm.newPassword,
-      });
-
-      if (response.data.status === "success") {
-        toast.success("Password changed successfully!");
-
-        // Wait for toast to show, then refresh
-        setTimeout(() => {
-          window.location.reload(); // Refresh the page
-        }, 1000);
-      } else {
-        toast.error(response.data.message);
-      }
-    } catch (error) {
-      console.error("Error changing password:", error);
-      toast.error("Server error. Try again later.");
-    } finally {
-      setLoading(false);
-    }
+  const handleInputChange = (e) => {
+    const { name, value } = e.target;
+    setProjectData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
   };
 
-  // Form handlers
+  const handleCreateUserSubmit = async (e) => {
+    e.preventDefault();
+  
+    if (createUserForm.password !== createUserForm.confirmPassword) {
+      alert('Passwords do not match!');
+      return;
+    }
+  
+    try {
+      const response = await fetch("http://localhost:5000/create-user", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          email: createUserForm.email,
+          password: createUserForm.password,
+          department: createUserForm.department,
+        }),
+      });
+  
+      const data = await response.json();
+      if (data.status === "success") {
+        alert("User created successfully!");
+        setCreateUserForm({ email: "", password: "", confirmPassword: "", department: "" });
+      } else {
+        alert(data.message || "Error creating user.");
+      }
+    } catch (error) {
+      console.error("Error:", error);
+      alert("Something went wrong. Please try again.");
+    }
+  };
+  
+
+  const handlePasswordSubmit = (e) => {
+    e.preventDefault();
+    if (passwordForm.newPassword !== passwordForm.confirmPassword) {
+      alert('New passwords do not match!');
+      return;
+    }
+    console.log('Password change submitted:', passwordForm);
+    setPasswordForm({
+      currentPassword: '',
+      newPassword: '',
+      confirmPassword: ''
+    });
+  };
+
   const handleDocumentSubmit = (e) => {
     e.preventDefault();
     console.log('Document form submitted:', documentForm);
@@ -290,7 +211,7 @@ const [utilityBudget, setUtilityBudget] = useState('');
       mobileNumber: ''
     });
   };
-  const navigate = useNavigate();
+
   const handleAttachmentSubmit = (e) => {
     e.preventDefault();
     console.log('Attachment form submitted:', attachmentForm);
@@ -309,56 +230,43 @@ const [utilityBudget, setUtilityBudget] = useState('');
       {/* Header */}
       <header className="bg-white shadow-sm border-b">
         <div className="flex justify-between items-center px-4 py-2">
-          <button className="px-4 py-2 bg-[#8B1F41] text-white rounded-md hover:bg-[#7a1b39]"
-          onClick={() => navigate("/revenue/addProject")}>
-            + Add Project
-          </button>
-          <div className="flex items-center gap-2">
-            {/* <span>mohithanchula09@gmail.com</span> */}
-            <span>{user ? user.email : "Loading..."}</span>
+         
+          <div className="flex items-end gap-2">
+            <span>csehod@gmail.com</span>
             <div className="w-8 h-8 bg-gray-200 rounded-full"></div>
           </div>
         </div>
       </header>
 
-      {/* Main Content */}
       <div className="flex">
         {/* Sidebar */}
         <aside className="w-64 bg-white h-screen shadow-sm">
           <div className="p-4 bg-[#8B1F41] text-white font-medium">
             Project Monitoring Portal
           </div>
-          <div className="p-4 bg-pink-100">Principal Investigator</div>
+          <div className="p-4 bg-pink-100">Department Admin</div>
           <nav className="p-2">
             <div className="space-y-2">
-            <button 
+             
+              <button 
   onClick={() => {
-    setCurrentView('home'); // Set the view to home
+    setCurrentView('dashboard'); // Set the view to home
   }}
   className={`w-full text-left p-2 rounded flex items-center ${
-    currentView === 'home' ? 'bg-[#8B1F41] text-white' : 'hover:bg-gray-100'
+    currentView === 'dashboard' ? 'bg-[#8B1F41] text-white' : 'hover:bg-gray-100'
   }`}
 >
-  🏠 Home
+📁 Dashboard
+</button>
+              <button 
+  onClick={() => {
+    setCurrentView('announcements');
+  }}
+  className={`w-full text-left p-2 rounded flex items-center ${currentView === 'announcements' ? 'bg-[#8B1F41] text-white' : 'hover:bg-gray-100'}`}
+>
+  📢 Announcements
 </button>
 
-
-              <button 
-                onClick={() => {
-                  setCurrentView('projects');
-                  setShowProjects(true);
-                  setShowPassword(false);
-                }}
-                className={`w-full text-left p-2 rounded flex items-center ${currentView === 'projects' ? 'bg-[#8B1F41] text-white' : 'hover:bg-gray-100'}`}
-              >
-                📁 Projects
-              </button>
-              <button
-      className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center"
-      onClick={() => navigate("/revenue/announcements")}
-    >
-      📢 Announcements
-    </button>
               <button 
                 onClick={() => {
                   setCurrentView('requestStatus');
@@ -382,6 +290,17 @@ const [utilityBudget, setUtilityBudget] = useState('');
               </button>
               <button 
                 onClick={() => {
+                  setCurrentView('createUser');
+                  setShowCreateUser(true);
+                  setShowPassword(false);
+                  setShowProjects(false);
+                }}
+                className={`w-full text-left p-2 rounded flex items-center ${currentView === 'createUser' ? 'bg-[#8B1F41] text-white' : 'hover:bg-gray-100'}`}
+              >
+                👤 Create User
+              </button>
+              {/* <button 
+                onClick={() => {
                   setCurrentView('password');
                   setShowPassword(true);
                   setShowProjects(false);
@@ -389,8 +308,8 @@ const [utilityBudget, setUtilityBudget] = useState('');
                 className={`w-full text-left p-2 rounded flex items-center ${currentView === 'password' ? 'bg-[#8B1F41] text-white' : 'hover:bg-gray-100'}`}
               >
                 🔑 Change Password
-              </button>
-              <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center" onClick={() => navigate("/login")}>
+              </button> */}
+              <button className="w-full text-left p-2 hover:bg-gray-100 rounded flex items-center">
                 ↪ Logout
               </button>
             </div>
@@ -398,169 +317,213 @@ const [utilityBudget, setUtilityBudget] = useState('');
         </aside>
 
         {/* Main Content Area */}
-       {/* Main Content */}
-       <main className="flex-1">
-       {currentView === 'projectTable' && <ProjectTable />}
-       {currentView === 'home' && <DepartmentProjectCards />} 
-          {currentView === 'requestStatus' ? (
+        <main className="flex-1 p-6">
+        {currentView === 'announcements' && <Announcements />}
+        {currentView === 'projectTable' && <ProjectTable />}
+        {currentView === 'dashboard' && <AllProjectCards />} 
+          {currentView === 'createUser' ? (
+           <div className="max-w-xl mx-auto bg-gray-50 p-8 rounded-lg shadow-lg mt-8">
+           <h2 className="text-3xl font-semibold text-[#8B1F41] text-center mb-6">Create New User</h2>
+           <form onSubmit={handleCreateUserSubmit} className="space-y-6">
+             <div className="space-y-2">
+               <label className="block text-sm font-medium text-gray-700">Email ID</label>
+               <input
+                 type="email"
+                 value={createUserForm.email}
+                 onChange={(e) => setCreateUserForm({...createUserForm, email: e.target.value})}
+                 className="block w-full p-3 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B1F41] focus:border-[#8B1F41] transition"
+                 placeholder="Enter email"
+                 required
+               />
+             </div>
+         
+             <div className="space-y-2">
+               <label className="block text-sm font-medium text-gray-700">New Password</label>
+               <input
+                 type="password"
+                 value={createUserForm.password}
+                 onChange={(e) => setCreateUserForm({...createUserForm, password: e.target.value})}
+                 className="block w-full p-3 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B1F41] focus:border-[#8B1F41] transition"
+                 placeholder="Enter password"
+                 required
+               />
+             </div>
+         
+             <div className="space-y-2">
+               <label className="block text-sm font-medium text-gray-700">Retype New Password</label>
+               <input
+                 type="password"
+                 value={createUserForm.confirmPassword}
+                 onChange={(e) => setCreateUserForm({...createUserForm, confirmPassword: e.target.value})}
+                 className="block w-full p-3 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B1F41] focus:border-[#8B1F41] transition"
+                 placeholder="Confirm password"
+                 required
+               />
+             </div>
+         
+             <div className="space-y-2">
+               <label className="block text-sm font-medium text-gray-700">Department</label>
+               <select
+                 value={createUserForm.department}
+                 onChange={(e) => setCreateUserForm({...createUserForm, department: e.target.value})}
+                 className="block w-full p-3 border-2 border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#8B1F41] focus:border-[#8B1F41] transition"
+                 required
+               >
+                 <option value="">Select Department</option>
+                 <option value="CSE">Computer Science and Engineering (CSE)</option>
+                 <option value="ECE">Electronics and Communication Engineering (ECE)</option>
+                 <option value="MECH">Mechanical Engineering (MECH)</option>
+                 <option value="CIVIL">Civil Engineering (CIVIL)</option>
+                 <option value="EEE">Electrical and Electronics Engineering (EEE)</option>
+                 <option value="IT">Information Technology (IT)</option>
+                 <option value="CHEM">Chemical Engineering (CHEM)</option>
+                 <option value="BIO">Biotechnology (BIO)</option>
+               </select>
+             </div>
+         
+             <div>
+               <button
+                 type="submit"
+                 className="w-full py-3 bg-[#8B1F41] text-white rounded-md hover:bg-[#7a1b39] transition-colors text-lg"
+               >
+                 Create User
+               </button>
+             </div>
+           </form>
+         </div>
+         
+          ) : currentView === 'requestStatus' ? (
             <RequestStatusView />
           ) : currentView === 'password' ? (
-            <div className="max-w-md mx-auto p-8">
-            <Toaster />
-            <h2 className="text-3xl font-bold text-[#8B1F41] mb-8 text-center">Change Password</h2>
-      
-            <form 
-              onSubmit={handlePasswordSubmit} 
-              className="bg-white p-8 rounded-xl shadow-lg space-y-6 border border-gray-300"
-            >
-              {/* Current Password */}
-              <div>
-                <label className="block text-md font-semibold text-gray-900 mb-2">Current Password</label>
-                <input
-                  type="password"
-                  value={passwordForm.currentPassword}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, currentPassword: e.target.value })}
-                  className="w-full px-5 py-3 border-2 border-gray-400 rounded-xl shadow-sm focus:border-[#8B1F41] focus:ring-[#8B1F41] focus:ring-2 transition-all outline-none"
-                  required
-                />
-              </div>
-      
-              {/* New Password */}
-              <div>
-                <label className="block text-md font-semibold text-gray-900 mb-2">New Password</label>
-                <input
-                  type="password"
-                  value={passwordForm.newPassword}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, newPassword: e.target.value })}
-                  className="w-full px-5 py-3 border-2 border-gray-400 rounded-xl shadow-sm focus:border-[#8B1F41] focus:ring-[#8B1F41] focus:ring-2 transition-all outline-none"
-                  required
-                />
-              </div>
-      
-              {/* Confirm Password */}
-              <div>
-                <label className="block text-md font-semibold text-gray-900 mb-2">Confirm New Password</label>
-                <input
-                  type="password"
-                  value={passwordForm.confirmPassword}
-                  onChange={(e) => setPasswordForm({ ...passwordForm, confirmPassword: e.target.value })}
-                  className="w-full px-5 py-3 border-2 border-gray-400 rounded-xl shadow-sm focus:border-[#8B1F41] focus:ring-[#8B1F41] focus:ring-2 transition-all outline-none"
-                  required
-                />
-              </div>
-      
-              {/* Submit Button */}
-              <button
-                type="submit"
-                className="w-full bg-[#8B1F41] text-white font-bold py-3 rounded-xl hover:bg-[#7a1b39] transition-all shadow-lg"
-                disabled={loading}
-              >
-                {loading ? "Changing Password..." : "Change Password"}
-              </button>
-      <ToastContainer position="top-right" autoClose={3000} />
-
-            </form>
-          </div>
+            <div className="max-w-md mx-auto">
+              <h2 className="text-2xl font-semibold text-[#8B1F41] mb-6">Change Password</h2>
+              <form onSubmit={handlePasswordSubmit} className="bg-white p-6 rounded-lg shadow-sm space-y-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Current Password</label>
+                  <input
+                    type="password"
+                    value={passwordForm.currentPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, currentPassword: e.target.value})}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8B1F41] focus:ring-[#8B1F41]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">New Password</label>
+                  <input
+                    type="password"
+                    value={passwordForm.newPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, newPassword: e.target.value})}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8B1F41] focus:ring-[#8B1F41]"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700">Confirm New Password</label>
+                  <input
+                    type="password"
+                    value={passwordForm.confirmPassword}
+                    onChange={(e) => setPasswordForm({...passwordForm, confirmPassword: e.target.value})}
+                    className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8B1F41] focus:ring-[#8B1F41]"
+                    required
+                  />
+                </div>
+                <button
+                  type="submit"
+                  className="w-full bg-[#8B1F41] text-white py-2 px-4 rounded-md hover:bg-[#7a1b39] transition-colors"
+                >
+                  Change Password
+                </button>
+              </form>
+            </div>
           ) : showProjects && (
             <div className="space-y-6">
               {/* Project Section */}
-              <div className="space-y-6">
               <section>
-      <div className="mb-6">
-        <h2 className="text-[#8B1F41] text-2xl font-medium mb-4">CSE</h2>
-        <div className="bg-white p-4 rounded-lg shadow-sm">
-          <table className="w-full">
-            <thead>
-              <tr className="text-left bg-gray-50">
-                <th className="py-2 px-4">Project</th>
-                <th>Department</th>
-                <th>Amount</th>
-                <th>Start Date</th>
-                <th>Duration</th>
-                <th>Actions</th>
-              </tr>
-            </thead>
-            <tbody>
-              {/* ✅ Input Row for New Project */}
-              <tr className="bg-gray-100">
-                <td className="py-2 px-4">
-                  <input
-                    type="text"
-                    name="project"
-                    value={projectData.project}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder="Enter Project"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    name="department"
-                    value={projectData.department}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="number"
-                    name="amount"
-                    value={projectData.amount}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder="Enter Amount"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="date"
-                    name="startDate"
-                    value={projectData.startDate}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                  />
-                </td>
-                <td>
-                  <input
-                    type="text"
-                    name="duration"
-                    value={projectData.duration}
-                    onChange={handleInputChange}
-                    className="w-full p-2 border border-gray-300 rounded-md"
-                    placeholder="Enter Duration"
-                  />
-                </td>
-                <td className="flex gap-2">
-                <button
-        onClick={handleSaveProject}
-        className="px-4 py-2 bg-red-800 text-white rounded-md hover:bg-red-600 disabled:opacity-50"
-        disabled={loading}
-      >
-        {loading ? "Saving..." : "Save Project"}
-      </button>
+                <div className="mb-6">
+                  <h2 className="text-[#8B1F41] text-2xl font-medium mb-4">CSE</h2>
+                  <div className="flex items-center gap-4 mb-4">
+                    <span className="text-xl font-semibold">#ID</span>
+                    <span className="text-lg text-gray-600">Revenue Management Project</span>
+                  </div>
+                  <div className="bg-white p-4 rounded-lg shadow-sm">
+                    <table className="w-full">
+                      <thead>
+                        <tr className="text-left bg-gray-50">
+                          <th className="py-2 px-4">Project</th>
+                          <th>Department</th>
+                          <th>Amount</th>
+                          <th>Start Date</th>
+                          <th>Duration</th>
+                          <th>Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        <tr className="bg-gray-100">
+                          <td className="py-2 px-4">
+                            <input
+                              type="text"
+                              name="project"
+                              value={projectData.project}
+                              onChange={handleInputChange}
+                              className="w-full p-2 border border-gray-300 rounded-md"
+                              placeholder="Enter Project"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              name="department"
+                              value={projectData.department}
+                              onChange={handleInputChange}
+                              className="w-full p-2 border border-gray-300 rounded-md"
+                              disabled
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="number"
+                              name="amount"
+                              value={projectData.amount}
+                              onChange={handleInputChange}
+                              className="w-full p-2 border border-gray-300 rounded-md"
+                              placeholder="Enter Amount"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="date"
+                              name="startDate"
+                              value={projectData.startDate}
+                              onChange={handleInputChange}
+                              className="w-full p-2 border border-gray-300 rounded-md"
+                            />
+                          </td>
+                          <td>
+                            <input
+                              type="text"
+                              name="duration"
+                              value={projectData.duration}
+                              onChange={handleInputChange}
+                              className="w-full p-2 border border-gray-300 rounded-md"
+                              placeholder="Enter Duration"
+                            />
+                          </td>
+                          <td className="flex gap-2">
+                            <button className="p-2 text-gray-600 hover:text-[#8B1F41]">
+                              <span role="img" aria-label="save">💾</span>
+                            </button>
+                            <button className="p-2 text-gray-600 hover:text-[#8B1F41]">
+                              <span role="img" aria-label="cancel">❌</span>
+                            </button>
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </section>
 
-      {/* Toast Container (Must be in the component) */}
-      <ToastContainer position="top-right" autoClose={3000} />
-                </td>
-              </tr>
-
-              {/* ✅ Display Existing Projects */}
-              {projects.map((project, index) => (
-                <tr key={index} className="bg-white">
-                  <td className="py-2 px-4">{project.project}</td>
-                  <td>{project.department}</td>
-                  <td>{project.amount}</td>
-                  <td>{project.startDate}</td>
-                  <td>{project.duration}</td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      </div>
-    </section>
-    </div>
               {/* Budget Section */}
               <section>
                 <div className="mb-6">
@@ -857,13 +820,22 @@ const [utilityBudget, setUtilityBudget] = useState('');
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Department</label>
-            <input
-              type="text"
+            <select
               value={teammateForm.department}
               onChange={(e) => setTeammateForm({...teammateForm, department: e.target.value})}
               className="mt-1 block w-full rounded-md border-gray-300 shadow-sm focus:border-[#8B1F41] focus:ring-[#8B1F41]"
               required
-            />
+            >
+              <option value="">Select Department</option>
+              <option value="CSE">Computer Science and Engineering (CSE)</option>
+              <option value="ECE">Electronics and Communication Engineering (ECE)</option>
+              <option value="MECH">Mechanical Engineering (MECH)</option>
+              <option value="CIVIL">Civil Engineering (CIVIL)</option>
+              <option value="EEE">Electrical and Electronics Engineering (EEE)</option>
+              <option value="IT">Information Technology (IT)</option>
+              <option value="CHEM">Chemical Engineering (CHEM)</option>
+              <option value="BIO">Biotechnology (BIO)</option>
+            </select>
           </div>
           <div>
             <label className="block text-sm font-medium text-gray-700">Stipend</label>
@@ -947,7 +919,7 @@ const [utilityBudget, setUtilityBudget] = useState('');
               Recurring
             </label>
           </div>
-          <div >
+          <div>
             <label className="block text-sm font-medium text-gray-700">Attachment</label>
             <input
               type="file"
@@ -976,5 +948,4 @@ const [utilityBudget, setUtilityBudget] = useState('');
   );
 }
 
-export default revenue1;
-
+export default hod;

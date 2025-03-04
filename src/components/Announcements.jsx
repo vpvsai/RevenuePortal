@@ -1,7 +1,24 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import axios from 'axios';
 
 function Announcements() {
+  const [announcements, setAnnouncements] = useState([]);
+
+  // Fetch announcements from the backend
+  useEffect(() => {
+    fetchAnnouncements();
+  }, []);
+
+  const fetchAnnouncements = async () => {
+    try {
+      const response = await axios.get('http://localhost:5000/get-announcements');
+      setAnnouncements(response.data.announcements);
+    } catch (error) {
+      console.error('Error fetching announcements:', error);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-[url('https://images.unsplash.com/photo-1541829070764-84a7d30dd3f3?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=2069&q=80')] bg-cover bg-center">
       <div className="min-h-screen bg-black/30">
@@ -36,22 +53,22 @@ function Announcements() {
           <div className="max-w-3xl mx-auto bg-white rounded-lg shadow-lg overflow-hidden">
             <div className="p-4 bg-gray-50 border-b flex items-center justify-between">
               <h3 className="text-lg font-semibold">Announcements</h3>
-              <button className="text-gray-600 hover:text-gray-800">
-                <span className="sr-only">Close</span>
-                ×
-              </button>
             </div>
-            
+
             <div className="p-6">
-              {/* Project Call Section */}
-              <div className="mb-6">
-                <div className="inline-block px-3 py-1 bg-[#8B0000] text-white text-sm font-medium rounded-md mb-3">
-                  PROJECT CALL
-                </div>
-                <p className="text-gray-500">
-                  No announcement has been posted yet
-                </p>
-              </div>
+              {/* Display all announcements */}
+              {announcements.length > 0 ? (
+                announcements.map((announcement, index) => (
+                  <div key={index} className="mb-6">
+                    <div className="inline-block px-3 py-1 bg-[#8B0000] text-white text-sm font-medium rounded-md mb-3">
+                      PROJECT CALL
+                    </div>
+                    <p className="text-gray-700">{announcement.message}</p>
+                  </div>
+                ))
+              ) : (
+                <p className="text-gray-500">No announcements have been posted yet</p>
+              )}
             </div>
           </div>
         </main>

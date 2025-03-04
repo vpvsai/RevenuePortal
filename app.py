@@ -64,6 +64,31 @@ def add_project():
     except Exception as e:
         return jsonify({"status": "error", "message": str(e)}), 500
 
+
+@app.route('/add_project_table', methods=['POST'])
+def add_project_table():
+    data = request.json
+    print("Received Data:", data)  # Check the incoming data
+
+    required_fields = [
+        "id", "referenceId", "title", "department", "duration", "agency",
+        "sanctionBudget", "status", "sanctionDate"
+    ]
+
+    # Validate required fields
+    for field in required_fields:
+        if field not in data or data[field] == "":
+            return jsonify({"status": "error", "message": f"Missing field: {field}"}), 400
+
+    try:
+        # Insert into ProjectTableDetails
+        result = mongo.db.ProjectTableDetails.insert_one(data)
+        print(f"Inserted Project with ID: {result.inserted_id}")  # Verify insert success
+        return jsonify({"status": "success", "message": "Project added to ProjectTableDetails!"}), 201
+    except Exception as e:
+        print(f"Error occurred while inserting data: {e}")  # Log the error
+        return jsonify({"status": "error", "message": str(e)}), 500
+
 # ✅ Fetch All Projects
 @app.route('/get-projects', methods=['GET'])
 def get_projects():

@@ -11,11 +11,11 @@ function ProjectTable() {
     department: '',
     duration: '',
     agency: '',
-    sanctionedBudget: '',
+    sanctionBudget: '',  // Change this to sanctionBudget
     status: '',
     sanctionDate: ''
   });
-
+  
   // Fetch projects from the database
   useEffect(() => {
     fetchProjects();
@@ -42,38 +42,29 @@ function ProjectTable() {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    console.log('Submitting data:', newProject);  // Check the data being submitted
     try {
-      const response = await fetch('http://localhost:5000/add-project', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json'
-        },
-        body: JSON.stringify(newProject)
-      });
-
-      const data = await response.json();
-      if (data.status === 'success') {
-        fetchProjects(); // Refresh data after adding a new project
-        setNewProject({
-          id: '',
-          referenceId: '',
-          title: '',
-          department: '',
-          duration: '',
-          agency: '',
-          sanctionedBudget: '',
-          status: '',
-          sanctionDate: ''
+        const response = await fetch('http://localhost:5000/add_project_table', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(newProject),
         });
-        alert('Project added successfully!');
-      } else {
-        alert('Error adding project.');
-      }
+
+        const data = await response.json();
+        console.log('API Response:', data);  // Log the response for debugging
+        if (data.status === 'success') {
+            fetchProjects();  // Refresh data after adding a new project
+            alert('Project added successfully!');
+        } else {
+            alert('Error adding project: ' + data.message);
+        }
     } catch (error) {
-      console.error('Error:', error);
-      alert('Server error.');
+        console.error('Error:', error);
+        alert('Server error.');
     }
-  };
+};
 
   return (
     <div className="p-6">
